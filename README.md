@@ -10,9 +10,11 @@ conda list -e > requirements.txt
 ```
 
 ## Generate synthetic velocity with constant SNR
-There is a showcase generating a synthetic dataset with SNR=[10, 4, 2, 1, 2/3, 1/2, 2/5, 1/3].
+- A RMS velocity model is provided to generate synthetic dataset (saved in /model_info/RMS_info.npy)
 
-Run the following codes in shell of Ubuntu system:
+- There is a example generating a few synthetic datasets with SNR=[10, 4, 2, 1, 2/3, 1/2, 2/5, 1/3], respectively.
+
+- Run the following codes in shell of Ubuntu system:
 ```shell
 nohup python GenerateData.py --DataRoot /mnt/data/spectrum/hade --OutRoot /mnt/data/spectrum/hade-S1 --SNR 10 > Run.log 2>&1 &
 nohup python GenerateData.py --DataRoot /mnt/data/spectrum/hade --OutRoot /mnt/data/spectrum/hade-S2 --SNR 4 > Run.log 2>&1 &
