@@ -76,7 +76,7 @@ def GetVelModel(root):
     VelInfoDict = {'tVec': np.array(SegyDict['gth'].samples),
                    't0Vec': np.array(SegyDict['pwr'].samples),
                    'VelModel': {}}
-
+    print('Loading the velocity information from source file...')
     for index in tqdm(UseIndex):
         line, cdp = index.split('_')
         VelInfoDict['VelModel'].setdefault(line, {})
