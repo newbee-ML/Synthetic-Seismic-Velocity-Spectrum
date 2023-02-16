@@ -13,7 +13,7 @@ import seaborn as sns
 def PlotVelField(VelField, cdpList, tInd, vInd, LineName, save_path):
     plt.figure(figsize=(20, 10), dpi=300)
     tshow = [''] * len(tInd)
-    tIndex = np.linspace(0, len(tInd)-1, num=20).astype(np.int)
+    tIndex = np.linspace(0, len(tInd)-1, num=20).astype(np.int32)
     for i in tIndex:
         tshow[i] = tInd[i]
     # heatmap

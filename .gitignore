@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# visual/fig
+model_info/fig
+.vscode
+
 # Distribution / packaging
 .Python
 build/

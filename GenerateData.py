@@ -15,7 +15,8 @@ from utils.VisualTools import PlotVelField
 parser = argparse.ArgumentParser()
 parser.add_argument('--DataRoot', type=str, default='/mnt/data/spectrum/hade')
 parser.add_argument('--OutRoot', type=str, default='/mnt/data/spectrum/hade-S1', help='path of Output')
-parser.add_argument('--SNR', type=float, default=1, help='signal noise ratio')
+parser.add_argument('--SNR', type=float, default=10, help='signal noise ratio')
+parser.add_argument('--visual', type=bool, default=False, help='whether to visualize the velocity fields')
 args = parser.parse_args()
 
 
@@ -29,11 +30,32 @@ for folder in ['gth', 'pwr']:
 
 # get the info of the rms velocity model 
 if os.path.exists(os.path.join('model_info', 'RMS_info.npy')):
-    VelDict = np.load('model_info/RMS_info.npy', allow_pickle=True)
+    VelDict = np.load('model_info/RMS_info.npy', allow_pickle=True).item()
 else:
     VelDict = GetVelModel(args.DataRoot)
     if not os.path.exists('model_info'): os.makedirs('model_info')
     np.save(os.path.join('model_info', 'RMS_info.npy'), VelDict)
+
+########################################################
+# visualize the generated RMS velocity field
+########################################################
+if args.visual:
+    for line in sorted(list(VelDict['VelModel'].keys())):
+        LineVel = VelDict['VelModel'][line]
+        # get the interpolated velocity curve
+        VelField = []
+        for cdp in sorted(list(LineVel.keys())):
+            label_point = LineVel[cdp]['RMSVel']
+            t0Vec = VelDict['t0Vec']
+            vVec = LineVel[cdp]['vVec']
+            VelField.append(interpolation(label_point, t0Vec, vVec)[:, 1])
+        VelField = np.array(VelField).T
+        if not os.path.exists(os.path.join('model_info', 'fig')): 
+            os.makedirs(os.path.join('model_info', 'fig'))
+        # plot the velocity field 
+        PlotVelField(VelField, list(LineVel.keys()), t0Vec, vVec, line, 
+                        os.path.join('model_info', 'fig', 'Line-%s.png' % line))
+        print('Velocity Field Line-%s visualized done!' % line)
 
 #########################################
 # synthetic data
@@ -62,22 +84,3 @@ for index in IndexList:
     np.save(os.path.join(args.OutRoot, 'pwr', 'pwr-%s-%s.npy' % (str(line), str(cdp))), Spectrum)
     print('Line %s\tCDP %s\tcost time:\t%.3fs' % (str(line), str(cdp), time()-start))
 
-########################################################
-# visualize the generated RMS velocity field
-########################################################
-for line in sorted(list(VelDict['VelModel'].keys())):
-    LineVel = VelDict['VelModel'][line]
-    # get the interpolated velocity curve
-    VelField = []
-    for cdp in sorted(list(LineVel.keys())):
-        label_point = LineVel[cdp]['RMSVel']
-        t0Vec = VelDict['t0Vec']
-        vVec = LineVel[cdp]['vVec']
-        VelField.append(interpolation(label_point, t0Vec, vVec)[:, 1])
-    VelField = np.array(VelField).T
-    if not os.path.exists(os.path.join('model_info', 'fig')): 
-        os.makedirs(os.path.join('model_info', 'fig'))
-    # plot the velocity field 
-    PlotVelField(VelField, list(LineVel.keys()), t0Vec, vVec, line, 
-                    os.path.join('model_info', 'fig', 'Line-%s.png' % line))
-    print(line, 'done!')
